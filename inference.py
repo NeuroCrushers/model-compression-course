@@ -8,10 +8,10 @@ from torch.utils.data import DataLoader
 from torch.nn.functional import softmax
 from datasets import load_dataset
 
-def get_test_data(random_seed=42, num_shards=10, batch_size=32):
-    dataset = load_dataset("tyqiangz/multilingual-sentiments", "all")
+def get_test_data(dataset, random_seed=42, num_shards=10, batch_size=32):
+    dataset = load_dataset(dataset, "all")
     dataset = dataset.shuffle(seed=random_seed)
-    dataset.set_format(type="torch", columns=["text", "language", "label"])
+    dataset.set_format(type="torch", columns=["text", "label"])
     test_dataset = dataset['test'].shard(num_shards=num_shards, index=0)
     test_loader = DataLoader(test_dataset, batch_size=batch_size)
     return test_dataset, test_loader
@@ -29,7 +29,7 @@ def evaluate(model, tokenizer, loader, device):
             ids = tokenized_batch['input_ids'].to(device)
             mask = tokenized_batch['attention_mask'].to(device)
             y = batch['label'].to(device)
-            prediction = softmax(model(input_ids=ids, attention_mask=mask), dim=1)
+            prediction = softmax(model(input_ids=ids, attention_mask=mask).logits, dim=1)
             y_pred = torch.argmax(prediction, axis=1)
             preds.extend(list(y_pred.cpu()))
             true.extend(list(y.cpu().numpy()))
@@ -40,22 +40,23 @@ def evaluate(model, tokenizer, loader, device):
     return f1, true, preds
 
 def eval_lang(data, model, tokenizer, device, language = "english", batch_size=32):
-  data = data.filter(lambda example: example["language"] == language)
   loader = DataLoader(data, batch_size = batch_size)
   f1, _, _ = evaluate(model, tokenizer, loader, device)
   return f1
 
-def eval_all_langs(data, model, tokenizer, device, languages):
+def eval_all_langs(dataset, model, tokenizer, device, languages):
   scores = {}
   for lang in languages:
     print(lang)
+    data = load_dataset(dataset, lang)['test']
     f1 = eval_lang(data, model, tokenizer, device, language = lang)
     scores.update({lang:f1})
   return scores
 
 def scores_to_df(scores_dict):
-  scores_dict_restructured = ({'language':lang, 'f1':f1} for lang, f1 in scores_dict.items())
-  return pd.DataFrame(scores_dict_restructured)
+  scores_df = pd.DataFrame.from_dict(scores_dict, orient = 'index', columns = ['f1'])
+  scores_df.loc['mean'] = scores_df.mean()
+  return scores_df
 
 def measure_size_mb(model):
     param_size = 0
@@ -74,7 +75,7 @@ def measure_inference_time(model, tokenizer, device, loader):
         tokenized_batch = tokenize(tokenizer, batch)
         ids = tokenized_batch['input_ids'].to(device)
         mask = tokenized_batch['attention_mask'].to(device)
-        output = model(input_ids=ids, attention_mask=mask)
+        _ = model(input_ids=ids, attention_mask=mask)
     end_time = time.time()
 
     infer_time = end_time - start_time
