@@ -141,6 +141,18 @@ class Trainer:
         accuracy = float(correct) / total
         return accuracy
 
-    def save_model(self):
+    def save(self):
         torch.save(self.model, self.checkpoints_path)
         print(f'Model saved to {self.checkpoints_path}')
+
+def train():
+    config = sys.argv[-1]
+    if type(config) == str:
+        if config.endswith('.json'):
+            return Trainer(config_path=config)()
+    if type(config) == dict:
+        return Trainer(config=config)()
+    print(f'Wrong config provided: {config}')
+
+if __name__ == "__main__":
+    train()
