@@ -78,6 +78,7 @@ class Trainer:
 
 
     def load_data(self):
+        print('Loading data')
         dataset = load_dataset(self.dataset_name)
         dataset.set_format(type="torch", columns=["text", "label"])
         train_dataset, val_dataset = dataset['train'].train_test_split(test_size=0.1).values()
