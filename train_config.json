@@ -1,0 +1,20 @@
+{
+  "experiment_name": "baseline",
+  "model_name": "bert-base-cased",
+  "dataset_name": "mteb/tweet_sentiment_extraction",
+  "root_dir": "/content/drive/MyDrive/model_compression",
+  "checkpoints_path": "model3.pt",
+  "device": "cuda",
+  "num_epochs": 1,
+  "batch_size": 64,
+  "max_length": 50,
+  "learning_rate": 1e-4,
+  "weight_decay": 1e-3,
+  "label2id": {
+    "positive": 2,
+    "neutral": 1,
+    "negative": 0
+  },
+  "save_model": true,
+  "from_checkpoints": true
+}
