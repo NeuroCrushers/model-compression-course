@@ -129,3 +129,15 @@ class Evaluator:
         info_df = pd.DataFrame.from_dict(self.info)
         info_df.to_csv(self.info_path)
         print(f'Results saved to {self.info_path}')
+
+def eval():
+    config = sys.argv[-1]
+    if type(config) == str:
+        if config.endswith('.json'):
+            return Evaluator(config_path=config)()
+    if type(config) == dict:
+        return Evaluator(config=config)()
+    print(f'Wrong config provided: {config}')
+
+if __name__ == "__main__":
+    eval()

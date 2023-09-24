@@ -15,6 +15,6 @@
     "neutral": 1,
     "negative": 0
   },
-  "save_model": true,
+  "save_model": false,
   "from_checkpoints": true
 }
