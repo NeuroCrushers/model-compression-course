@@ -51,7 +51,7 @@ class Trainer:
             print(
                f"\nAverage loss: {mean_loss}, Train accuracy: {train_accuracy}, Val accuracy: {val_accuracy}" )
             if self.save_model:
-                self.save_model()
+                self.save()
         return loss_history, train_history, val_history
 
     def load_config(self, config = None, config_path = None):
