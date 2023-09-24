@@ -99,7 +99,7 @@ class Evaluator:
                 y_pred = torch.argmax(prediction, axis=1)
                 preds.extend(list(y_pred.cpu()))
                 true.extend(list(y.cpu().numpy()))
-                tq.set_description(f'\rF1 for batch {batch_num}: {f1_score(y.cpu(), y_pred.cpu(), average="weighted")}')
+                tq.set_description(f'\rF1 for batch {batch_num}: {round(f1_score(y.cpu(), y_pred.cpu(), average="weighted"),3)}')
         f1 = f1_score(true, preds, average="weighted")
         print(f'\nTotal F1 score: {round(f1, 2)}')
         return f1
@@ -126,7 +126,7 @@ class Evaluator:
                            'Device': self.device
                            }
         self.info.append(experiment_info)
-        info_df = pd.DataFrame.from_dict(self.info)
+        info_df = pd.DataFrame.from_dict(self.info).set_index('Experiment')
         info_df.to_csv(self.info_path)
         print(f'Results saved to {self.info_path}')
 

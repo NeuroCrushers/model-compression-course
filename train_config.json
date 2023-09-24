@@ -5,6 +5,7 @@
   "root_dir": "/content/drive/MyDrive/model_compression",
   "checkpoints_path": "model3.pt",
   "device": "cuda",
+  "random_seed": 42,
   "num_epochs": 1,
   "batch_size": 64,
   "max_length": 50,

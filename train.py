@@ -38,7 +38,7 @@ class Trainer:
                 loss_accum += loss
                 self.cleanup()
                 accuracy, correct, total = self.compute_accuracy(prediction, y, correct, total)
-                tq.set_description(f'\rLoss: {loss}. Train accuracy: {accuracy}')
+                tq.set_description(f'\rLoss: {round(loss, 3)} Train accuracy: {round(accuracy, 3)}')
 
             mean_loss = loss_accum / batch_num
             train_accuracy = float(correct) / total
@@ -49,7 +49,9 @@ class Trainer:
             val_history.append(val_accuracy)
 
             print(
-               f"\nAverage loss: {mean_loss}, Train accuracy: {train_accuracy}, Val accuracy: {val_accuracy}" )
+               f"\nAverage loss: {round(mean_loss, 3)},"
+               f"Train accuracy: {round(train_accuracy, 3)}, "
+               f"Val accuracy: {round(val_accuracy, 3)}" )
             if self.save_model:
                 self.save()
         return loss_history, train_history, val_history
@@ -65,6 +67,7 @@ class Trainer:
         self.batch_size = config['batch_size']
         self.root_dir = config['root_dir']
         self.max_length = config['max_length']
+        self.random_seed = config['random_seed']
         self.device = config['device']
         self.label2id = config['label2id']
         self.id2label = dict(zip(self.label2id.values(), self.label2id.keys()))
@@ -81,7 +84,7 @@ class Trainer:
         print('Loading data')
         dataset = load_dataset(self.dataset_name)
         dataset.set_format(type="torch", columns=["text", "label"])
-        train_dataset, val_dataset = dataset['train'].train_test_split(test_size=0.1).values()
+        train_dataset, val_dataset = dataset['train'].train_test_split(test_size=0.1, seed=self.random_seed).values()
         train_loader = DataLoader(train_dataset, batch_size=self.batch_size)
         val_loader = DataLoader(val_dataset, batch_size=self.batch_size)
         return train_loader, val_loader
@@ -89,14 +92,14 @@ class Trainer:
     def load_model(self):
         tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         if self.model:
-            return self.model, tokenizer
+            model = self.model
         elif os.path.exists(self.checkpoints_path) and self.from_checkpoints:
             print(f'Loading model from checkpoints {self.checkpoints_path}')
             model = torch.load(self.checkpoints_path, map_location=self.device)
         else:
             print(f'Loading pretrained model {self.model_name}')
             model = AutoModelForSequenceClassification.from_pretrained(self.model_name, num_labels=self.num_labels)
-        return model, tokenizer
+        return model.to(self.device), tokenizer
 
     def cleanup(self):
         torch.cuda.empty_cache()
@@ -124,7 +127,7 @@ class Trainer:
 
     def compute_accuracy(self, prediction, y_true, correct, total):
         y_pred = torch.argmax(prediction, axis=1)
-        correct += torch.sum(y_pred == y_true)
+        correct += torch.sum(y_pred == y_true).item()
         total += y_true.shape[0]
         accuracy = correct / total
         return accuracy, correct, total
@@ -137,7 +140,7 @@ class Trainer:
         for batch_num, batch in enumerate(tq):
             prediction, y = self.get_prediction(batch)
             accuracy, correct, total = self.compute_accuracy(prediction, y, correct, total)
-            tq.set_description(f'\rVal accuracy: {accuracy}')
+            tq.set_description(f'\rVal accuracy: {round(accuracy, 3)}')
         accuracy = float(correct) / total
         return accuracy
 
