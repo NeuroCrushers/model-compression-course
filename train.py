@@ -3,7 +3,7 @@ import gc
 import sys
 import json
 from typing import Dict, Any
-from tqdm.notebook import tqdm
+from tqdm.autonotebook import tqdm
 import torch
 from torch.optim import AdamW, Adam
 from torch.nn import CrossEntropyLoss
@@ -31,14 +31,14 @@ class Trainer:
             loss_accum = 0
             correct = 0
             total = 0
-            for batch_num, batch in enumerate(tqdm(self.train_loader), start=1):
+            tq = tqdm(self.train_loader)
+            for batch_num, batch in enumerate(tq, start=1):
                 prediction, y = self.get_prediction(batch)
                 loss = self.compute_loss(prediction, y)
                 loss_accum += loss
                 self.cleanup()
                 accuracy, correct, total = self.compute_accuracy(prediction, y, correct, total)
-                sys.stdout.write(f'\rLoss: {loss}. Train accuracy: {accuracy}')
-                sys.stdout.flush()
+                tq.set_description(f'\rLoss: {loss}. Train accuracy: {accuracy}')
 
             mean_loss = loss_accum / batch_num
             train_accuracy = float(correct) / total
@@ -133,11 +133,11 @@ class Trainer:
         self.model.eval()
         correct = 0
         total = 0
-        for batch_num, batch in enumerate(tqdm(self.val_loader)):
+        tq = tqdm(self.val_loader)
+        for batch_num, batch in enumerate(tq):
             prediction, y = self.get_prediction(batch)
             accuracy, correct, total = self.compute_accuracy(prediction, y, correct, total)
-            sys.stdout.write(f'\rVal accuracy: {accuracy}')
-            sys.stdout.flush()
+            tq.set_description(f'\rVal accuracy: {accuracy}')
         accuracy = float(correct) / total
         return accuracy
 

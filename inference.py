@@ -4,7 +4,7 @@ import json
 import time
 import pandas as pd
 from typing import Dict, Any
-from tqdm.notebook import tqdm
+from tqdm.autonotebook import tqdm
 from sklearn.metrics import f1_score
 import torch
 from torch.utils.data import DataLoader
@@ -89,7 +89,8 @@ class Evaluator:
         preds = []
         self.model.eval()
         with torch.no_grad():
-            for batch_num, batch in enumerate(tqdm(self.test_loader)):
+            tq = tqdm(self.test_loader)
+            for batch_num, batch in enumerate(tq):
                 tokenized_batch = self.tokenize(batch)
                 ids = tokenized_batch['input_ids'].to(self.device)
                 mask = tokenized_batch['attention_mask'].to(self.device)
@@ -98,8 +99,7 @@ class Evaluator:
                 y_pred = torch.argmax(prediction, axis=1)
                 preds.extend(list(y_pred.cpu()))
                 true.extend(list(y.cpu().numpy()))
-                sys.stdout.write(f'\rF1 for batch {batch_num}: {f1_score(y.cpu(), y_pred.cpu(), average="weighted")}')
-                sys.stdout.flush()
+                tq.set_description(f'\rF1 for batch {batch_num}: {f1_score(y.cpu(), y_pred.cpu(), average="weighted")}')
         f1 = f1_score(true, preds, average="weighted")
         print(f'\nTotal F1 score: {round(f1, 2)}')
         return f1
