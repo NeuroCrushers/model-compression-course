@@ -76,7 +76,7 @@ class Evaluator:
         tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         #model = AutoModelForSequenceClassification.from_pretrained(self.model_name, num_labels=3)
         if self.model:
-            return self.model, tokenizer
+            model = self.model.to(self.device)
         model = torch.load(self.checkpoints_path, map_location=self.device)
         return model, tokenizer
 
