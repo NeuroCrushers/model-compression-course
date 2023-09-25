@@ -3,5 +3,6 @@ pandas == 1.5.3
 sentencepiece == 0.1.99
 scikit-learn == 1.2.2
 transformers == 4.33.2
-torch == 2.0.1+cu118
+torch == 2.0.1
 tqdm == 4.66.1
+requests==2.27.1
