@@ -6,4 +6,5 @@ Dataset: ```mteb/tweet_sentiment_extraction``` (30K samples)
 
 | Experiment | Num params | Model size (MB) | Inference time (s) | Macro F1 |
 |------------|------------|-----------------|--------------------|----------|
-| Baseline   | 1.08e+08   | 413.188         | 8.799              | 0.783   | 
+| original_model   | 1.08e+08   | 413.188         | 75.124              | 0.783   | 
+| dynamic_quantization   | 2.27e+07  | 86.609         | 50.985              | 0.779   | 

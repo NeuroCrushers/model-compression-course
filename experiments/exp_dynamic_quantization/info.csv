@@ -1,2 +1,2 @@
 Experiment,Num params,Size (Mb),Inference time (s),F1 score,Device
-exp_dynamic_quantization,2.270e+07,86.609,48.316,0.77,cpu
+exp_dynamic_quantization,2.270e+07,86.609,50.986,0.779,cpu

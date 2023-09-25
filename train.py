@@ -1,12 +1,14 @@
 import os
 os.environ['CURL_CA_BUNDLE'] = ''
 
+import torch
+torch.manual_seed(42)
+
 import gc
 import sys
 import json
 from typing import Dict, Any
 from tqdm.autonotebook import tqdm
-import torch
 from torch.optim import AdamW, Adam
 from torch.nn import CrossEntropyLoss
 from torch.utils.data import DataLoader
@@ -101,8 +103,6 @@ class Trainer:
             print(f'Loading pretrained model {self.model_name}')
             model = AutoModelForSequenceClassification.from_pretrained(self.model_name, num_labels=self.num_labels)
 
-        if self.use_QAT:
-            model = self.QAT(model)
         return model.to(self.device), tokenizer
 
     def cleanup(self):

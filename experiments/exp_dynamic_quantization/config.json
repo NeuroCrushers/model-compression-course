@@ -3,7 +3,7 @@
   "model_name": "bert-base-cased",
   "dataset_name": "mteb/tweet_sentiment_extraction",
   "root_dir": "./",
-  "checkpoints_path": "post_train_static_quantization.pt",
+  "checkpoints_path": "./baseline.pt",
   "device": "cpu",
   "random_seed": 42,
   "num_epochs": 1,

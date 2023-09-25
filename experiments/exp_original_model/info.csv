@@ -1,2 +1,2 @@
 Experiment,Num params,Size (Mb),Inference time (s),F1 score,Device
-exp_original_model,1.083e+08,413.188,4.449,0.781,cuda
+exp_original_model,1.083e+08,413.188,75.124,0.784,cpu
