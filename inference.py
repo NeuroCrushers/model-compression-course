@@ -11,7 +11,8 @@ from torch.utils.data import DataLoader
 from torch.nn.functional import softmax
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-
+import argparse
+from pathlib import Path
 
 class Evaluator:
     def __init__(self, config:Dict[str, Any] = None, config_path:str = None, model = None):
@@ -21,7 +22,7 @@ class Evaluator:
         self.test_dataset, self.test_loader = self.load_data()
         self.model, self.tokenizer = self.load_model()
 
-    def __call__(self):
+    def evaluate(self):
         num_params = self.measure_num_params()
         size = self.measure_size_mb()
         start_time = time.time()
@@ -53,9 +54,9 @@ class Evaluator:
         self.label2id = config['label2id']
         self.id2label = dict(zip(self.label2id.values(), self.label2id.keys()))
         self.num_labels = len(self.label2id)
-        self.save_report = config['save_report']
+        self.save_report = config.get('save_report', True)
         self.checkpoints_path = os.path.join(self.root_dir, config['checkpoints_path'])
-        self.info_path = os.path.join(self.root_dir, config['info_path'])
+        self.info_path = os.path.join(self.root_dir, config.get('info_path', Path(self.root_dir) / 'experiments' / self.experiment_name / 'info.csv'))
 
     def load_info(self):
         try:
@@ -130,14 +131,13 @@ class Evaluator:
         info_df.to_csv(self.info_path)
         print(f'Results saved to {self.info_path}')
 
-def eval():
-    config = sys.argv[-1]
-    if type(config) == str:
-        if config.endswith('.json'):
-            return Evaluator(config_path=config)()
-    if type(config) == dict:
-        return Evaluator(config=config)()
-    print(f'Wrong config provided: {config}')
 
 if __name__ == "__main__":
-    eval()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config_path", type=str, required=True)
+    args = parser.parse_args()
+
+    config_path = args.config_path
+    evaluator = Evaluator(config_path=config_path)
+    evaluator.evaluate()
+

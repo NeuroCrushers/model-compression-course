@@ -1,4 +1,6 @@
 import os
+os.environ['CURL_CA_BUNDLE'] = ''
+
 import gc
 import sys
 import json
@@ -10,7 +12,7 @@ from torch.nn import CrossEntropyLoss
 from torch.utils.data import DataLoader
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-
+import argparse
 
 class Trainer:
     def __init__(self, config:Dict[str, Any] = None, config_path:str = None, model = None):
@@ -21,7 +23,7 @@ class Trainer:
         self.optimizer = Adam(list(self.model.parameters()), lr=self.learning_rate, weight_decay=self.weight_decay)
         self.criterion = CrossEntropyLoss()
 
-    def __call__(self):
+    def train(self):
         loss_history = []
         train_history = []
         val_history = []
@@ -148,14 +150,11 @@ class Trainer:
         torch.save(self.model, self.checkpoints_path)
         print(f'Model saved to {self.checkpoints_path}')
 
-def train():
-    config = sys.argv[-1]
-    if type(config) == str:
-        if config.endswith('.json'):
-            return Trainer(config_path=config)()
-    if type(config) == dict:
-        return Trainer(config=config)()
-    print(f'Wrong config provided: {config}')
-
 if __name__ == "__main__":
-    train()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config_path", type=str, required=True)
+    args = parser.parse_args()
+    
+    config_path = args.config_path
+    trainer = Trainer(config_path=config_path)
+    trainer.train()
