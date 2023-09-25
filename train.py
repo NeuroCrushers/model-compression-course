@@ -81,7 +81,6 @@ class Trainer:
         self.from_checkpoints = config['from_checkpoints']
         self.num_epochs = config['num_epochs']
 
-
     def load_data(self):
         print('Loading data')
         dataset = load_dataset(self.dataset_name)
@@ -101,6 +100,9 @@ class Trainer:
         else:
             print(f'Loading pretrained model {self.model_name}')
             model = AutoModelForSequenceClassification.from_pretrained(self.model_name, num_labels=self.num_labels)
+
+        if self.use_QAT:
+            model = self.QAT(model)
         return model.to(self.device), tokenizer
 
     def cleanup(self):
