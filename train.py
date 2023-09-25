@@ -1,12 +1,14 @@
 import os
 os.environ['CURL_CA_BUNDLE'] = ''
 
+import torch
+torch.manual_seed(42)
+
 import gc
 import sys
 import json
 from typing import Dict, Any
 from tqdm.autonotebook import tqdm
-import torch
 from torch.optim import AdamW, Adam
 from torch.nn import CrossEntropyLoss
 from torch.utils.data import DataLoader
@@ -81,7 +83,6 @@ class Trainer:
         self.from_checkpoints = config['from_checkpoints']
         self.num_epochs = config['num_epochs']
 
-
     def load_data(self):
         print('Loading data')
         dataset = load_dataset(self.dataset_name)
@@ -101,6 +102,7 @@ class Trainer:
         else:
             print(f'Loading pretrained model {self.model_name}')
             model = AutoModelForSequenceClassification.from_pretrained(self.model_name, num_labels=self.num_labels)
+
         return model.to(self.device), tokenizer
 
     def cleanup(self):

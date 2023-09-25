@@ -57,6 +57,7 @@ class Evaluator:
         self.save_report = config.get('save_report', True)
         self.checkpoints_path = os.path.join(self.root_dir, config['checkpoints_path'])
         self.info_path = os.path.join(self.root_dir, config.get('info_path', Path(self.root_dir) / 'experiments' / self.experiment_name / 'info.csv'))
+        self.use_dynamic_quantization = config.get('use_dynamic_quantization', False)
 
     def load_info(self):
         try:
@@ -72,6 +73,14 @@ class Evaluator:
         test_dataset = dataset['test']
         test_loader = DataLoader(test_dataset, batch_size=self.batch_size)
         return test_dataset, test_loader
+    
+
+    def dynamic_quantization(self, model):
+        quantized_model = torch.quantization.quantize_dynamic(
+            model, {torch.nn.Linear}, dtype=torch.qint8
+        )
+        return quantized_model.to(self.device)
+
 
     def load_model(self):
         tokenizer = AutoTokenizer.from_pretrained(self.model_name)
@@ -80,6 +89,8 @@ class Evaluator:
             model = self.model.to(self.device)
         else:
             model = torch.load(self.checkpoints_path, map_location=self.device)
+        if self.use_dynamic_quantization:
+            model = self.dynamic_quantization(model=model)
         return model, tokenizer
 
     def tokenize(self, batch):
