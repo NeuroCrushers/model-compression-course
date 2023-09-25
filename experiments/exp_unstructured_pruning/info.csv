@@ -1,0 +1,2 @@
+Experiment,Num params,Size (Mb),Inference time (s),F1 score,Device
+exp_unstructured_pruning,1.083e+08,413.188,348.743,0.646,cpu
