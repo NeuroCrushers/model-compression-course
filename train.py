@@ -16,6 +16,8 @@ from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import argparse
 
+from rigl_torch.RigL import RigLScheduler
+
 class Trainer:
     def __init__(self, config:Dict[str, Any] = None, config_path:str = None, model = None):
         self.load_config(config=config, config_path=config_path)
@@ -24,6 +26,19 @@ class Trainer:
         self.model, self.tokenizer = self.load_model()
         self.optimizer = Adam(list(self.model.parameters()), lr=self.learning_rate, weight_decay=self.weight_decay)
         self.criterion = CrossEntropyLoss()
+        self.pruner = None
+        if self.sparse_training:
+            self.pruner = RigLScheduler(self.model,                           
+                           self.optimizer,                      
+                           dense_allocation=0.9,                                          
+                           sparsity_distribution='uniform', 
+                           T_end = int(0.75*len(self.train_loader) * self.num_epochs),                    
+                           delta=100,                       
+                           alpha=0.3,                       
+                           grad_accumulation_n=1,                                                                      
+                           static_topo=False,                                                                         
+                           ignore_linear_layers=False,      
+                           state_dict=None)  
 
     def train(self):
         loss_history = []
@@ -82,6 +97,7 @@ class Trainer:
         self.weight_decay = config['weight_decay']
         self.from_checkpoints = config['from_checkpoints']
         self.num_epochs = config['num_epochs']
+        self.sparse_training = config.get('sparse_training', False)
 
     def load_data(self):
         print('Loading data')
@@ -125,8 +141,13 @@ class Trainer:
     def compute_loss(self, prediction, y):
         loss = self.criterion(prediction, y)
         loss.backward()
-        self.optimizer.step()
-        self.optimizer.zero_grad()
+        if self.pruner is not None:
+            if self.pruner():
+                self.optimizer.step()
+                self.optimizer.zero_grad()
+        else:
+            self.optimizer.step()
+            self.optimizer.zero_grad()
         return loss.item()
 
     def compute_accuracy(self, prediction, y_true, correct, total):

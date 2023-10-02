@@ -13,14 +13,17 @@ from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import argparse
 from pathlib import Path
+import torch.nn.utils.prune as prune
+import copy
 
 class Evaluator:
-    def __init__(self, config:Dict[str, Any] = None, config_path:str = None, model = None):
+    def __init__(self, config:Dict[str, Any] = None, config_path:str = None, model = None, save_report = False):
         self.load_config(config=config, config_path=config_path)
         self.model = model
         self.info = self.load_info()
         self.test_dataset, self.test_loader = self.load_data()
         self.model, self.tokenizer = self.load_model()
+        self.save_report = save_report
 
     def evaluate(self):
         num_params = self.measure_num_params()
@@ -54,10 +57,13 @@ class Evaluator:
         self.label2id = config['label2id']
         self.id2label = dict(zip(self.label2id.values(), self.label2id.keys()))
         self.num_labels = len(self.label2id)
-        self.save_report = config.get('save_report', True)
+        self.save_report = config.get('save_report', False)
         self.checkpoints_path = os.path.join(self.root_dir, config['checkpoints_path'])
         self.info_path = os.path.join(self.root_dir, config.get('info_path', Path(self.root_dir) / 'experiments' / self.experiment_name / 'info.csv'))
         self.use_dynamic_quantization = config.get('use_dynamic_quantization', False)
+        self.prune_unstructured = config.get('prune_unstructured', False)
+        self.prune_l1_unstructured = config.get('prune_l1_unstructured', False)
+        self.prune_random_unstructured = config.get('prune_random_unstructured', False)
 
     def load_info(self):
         try:
@@ -80,6 +86,20 @@ class Evaluator:
             model, {torch.nn.Linear}, dtype=torch.qint8
         )
         return quantized_model.to(self.device)
+    
+    def prune_module(self, module, name, pruning_method=prune.random_unstructured, amount=0.3):
+        pruning_method(module, name=name, amount=amount)
+        prune.remove(module, name)
+
+
+    def prune_model(self, model, **kwargs):
+        pruned_model = copy.deepcopy(model)
+        for module in pruned_model.modules():
+            if not isinstance(module, torch.nn.Embedding) and hasattr(module, 'weight'):
+                self.prune_module(module, name='weight', **kwargs)
+            elif not isinstance(module, torch.nn.Embedding) and hasattr(module, 'bias'):
+                self.prune_module(module, name='bias', **kwargs)
+        return pruned_model
 
 
     def load_model(self):
@@ -91,6 +111,11 @@ class Evaluator:
             model = torch.load(self.checkpoints_path, map_location=self.device)
         if self.use_dynamic_quantization:
             model = self.dynamic_quantization(model=model)
+        if self.prune_random_unstructured:
+            model = self.prune_model(model, pruning_method=prune.random_unstructured, amount=0.1)
+        if self.prune_l1_unstructured:
+            model = self.prune_model(model, pruning_method=prune.l1_unstructured, amount=0.1)
+
         return model, tokenizer
 
     def tokenize(self, batch):
@@ -147,9 +172,11 @@ class Evaluator:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config_path", type=str, required=True)
+    parser.add_argument("--save_report", type=bool, default=False)
     args = parser.parse_args()
 
     config_path = args.config_path
-    evaluator = Evaluator(config_path=config_path)
+    save_report = args.save_report
+    evaluator = Evaluator(config_path=config_path, save_report=save_report)
     evaluator.evaluate()
 

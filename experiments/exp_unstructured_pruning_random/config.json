@@ -1,9 +1,9 @@
 {
-  "experiment_name": "exp_sparse_training",
+  "experiment_name": "exp_unstructured_pruning_random",
   "model_name": "bert-base-cased",
   "dataset_name": "mteb/tweet_sentiment_extraction",
   "root_dir": "./",
-  "checkpoints_path": "RiGL_model.pt",
+  "checkpoints_path": "baseline.pt",
   "device": "cpu",
   "random_seed": 42,
   "num_epochs": 1,
@@ -18,5 +18,7 @@
   },
   "save_model": true,
   "from_checkpoints": false,
-  "sparse_training": true
+  "info_path": "experiments/exp_unstructured_pruning_random/info.csv",
+  "prune_l1_unstructured": false,
+  "prune_random_unstructured": true
 }
