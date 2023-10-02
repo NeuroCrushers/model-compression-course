@@ -6,3 +6,5 @@ transformers == 4.33.2
 torch == 2.0.1
 tqdm == 4.66.1
 requests==2.27.1
+torchvision
+rigl-torch

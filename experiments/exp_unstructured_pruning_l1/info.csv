@@ -1,2 +1,2 @@
 Experiment,Num params,Size (Mb),Inference time (s),F1 score,Device
-exp_dynamic_quantization,2.270e+07,86.609,54.674,0.779,cpu
+exp_unstructured_pruning_l1,1.083e+08,413.188,80.742,0.665,cpu

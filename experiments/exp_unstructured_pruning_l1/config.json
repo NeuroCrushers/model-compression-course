@@ -1,5 +1,5 @@
 {
-  "experiment_name": "exp_unstructured_pruning",
+  "experiment_name": "exp_unstructured_pruning_l1",
   "model_name": "bert-base-cased",
   "dataset_name": "mteb/tweet_sentiment_extraction",
   "root_dir": "./",
@@ -18,5 +18,7 @@
   },
   "save_model": true,
   "from_checkpoints": false,
-  "info_path": "info.csv"
+  "info_path": "experiments/exp_unstructured_pruning_l1/info.csv",
+  "prune_l1_unstructured": true,
+  "prune_random_unstructured": false
 }
