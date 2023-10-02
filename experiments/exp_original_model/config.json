@@ -1,5 +1,5 @@
 {
-  "experiment_name": "exp_sparse_training",
+  "experiment_name": "exp_original_model",
   "model_name": "bert-base-cased",
   "dataset_name": "mteb/tweet_sentiment_extraction",
   "root_dir": "./",
