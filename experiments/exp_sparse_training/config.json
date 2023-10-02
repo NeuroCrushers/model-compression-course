@@ -1,9 +1,9 @@
 {
-  "experiment_name": "exp_original_model",
+  "experiment_name": "exp_sparse_training",
   "model_name": "bert-base-cased",
   "dataset_name": "mteb/tweet_sentiment_extraction",
   "root_dir": "./",
-  "checkpoints_path": "baseline.pt",
+  "checkpoints_path": "RiGL_model.pt",
   "device": "cuda",
   "random_seed": 42,
   "num_epochs": 1,
