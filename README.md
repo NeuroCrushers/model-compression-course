@@ -15,7 +15,10 @@ Dataset: ```mteb/tweet_sentiment_extraction``` (30K samples)
 
 
 ## Weight clustering 
-Text classification on IMDB dataset
+Text classification on imdb_reviews dataset from tensorflow-datasets. Model arhitecture: 
+
+Embedding -> Dropout -> GlobalAveragePooling1D -> Dropout -> Dense
+
 | Model | Num params | Model size (MB) | Accuracy |
 |------------|------------|-----------------|----------|
 |baseline | 160033 | 0.625  | 0.904 |
