@@ -12,3 +12,14 @@ Dataset: ```mteb/tweet_sentiment_extraction``` (30K samples)
 |exp_unstructured_pruning_l1|1.083e+08|413.188|80.742|0.665|
 |exp_sparse_training|1.083e+08|413.188|83.362|0.714|
 
+
+
+## Weight clustering 
+Text classification on IMDB dataset
+| Model | Num params | Model size (MB) | Accuracy |
+|------------|------------|-----------------|----------|
+|baseline | 160033 | 0.625  | 0.904 |
+|baseline_clustered | 320097 | 1.83  | 0.834 |
+|baseline_clustered_finetuned | 320097 | 1.83  | 0.902 |
+
+
