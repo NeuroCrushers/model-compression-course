@@ -1,8 +1,8 @@
 # Model Compression Course
 Assignments for the Model Compression Course (ITMO University, AI Talent Hub)
 
-Model: ```bert-base-cased```  
-Dataset: ```mteb/tweet_sentiment_extraction``` (30K samples)
+Text classification on [mteb/tweet_sentiment_extraction](https://huggingface.co/datasets/mteb/tweet_sentiment_extraction) dataset (30K samples).  
+Model: ```bert-base-cased```
 
 | Experiment | Num params | Model size (MB) | Inference time (s) | Macro F1 |
 |------------|------------|-----------------|--------------------|----------|
@@ -15,9 +15,9 @@ Dataset: ```mteb/tweet_sentiment_extraction``` (30K samples)
 
 
 ## Weight clustering 
-Text classification on imdb_reviews dataset from tensorflow-datasets. Model arhitecture: 
-
-Embedding -> Dropout -> GlobalAveragePooling1D -> Dropout -> Dense
+Text classification on [imdb_reviews dataset](https://www.tensorflow.org/datasets/catalog/imdb_reviews) from tensorflow-datasets.   
+Model arhitecture:  
+```Embedding -> Dropout -> GlobalAveragePooling1D -> Dropout -> Dense```
 
 | Model | Num params | Model size (MB) | Accuracy |
 |------------|------------|-----------------|----------|
