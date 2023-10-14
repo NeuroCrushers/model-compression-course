@@ -1,0 +1,2 @@
+Experiment,Num params,Size (Mb),Inference time (s),F1 score,Device
+exp_openvino,0.000e+00,206.598,99.797,0.775,cpu
