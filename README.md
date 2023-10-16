@@ -23,3 +23,16 @@ Text classification on IMDB dataset
 |baseline_clustered_finetuned | 320097 | 1.83  | 0.902 |
 
 
+
+
+## Knowledge distillation 
+Model (teacher): ```bert-base-uncased```  
+Model (student 1): ```bert-tiny``` 
+Model (student 2): ```distilbert-base-uncased``` 
+Dataset: ```mteb/tweet_sentiment_extraction``` (30K samples)
+| Model | Num params | Model size (MB) |Time for 100 samples (s) | Accuracy | Raw acuracy |
+|------------|------------|-----------------|-----------------|----------|----------|
+|bert-base-uncased (1 exp) | 109484547 | 439 | 10.37 | 0.831 | - |
+|bert-tiny | 4386307 | 19  | 1.01 | 0.521 | 0.282 |
+|bert-base-uncased (2 exp) | 109484547 | 439 | 11.87 | 0.831 | - |
+|distilbert-base-uncased | 66955779 | 269 | 5.34 | 0.789 | 0.282 |
