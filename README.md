@@ -6,12 +6,12 @@ Model: ```bert-base-cased```
 
 | Experiment | Num params | Model size (MB) | Inference time (s) | Macro F1 |
 |------------|------------|-----------------|--------------------|----------|
-|exp_original_model|1.083e+08|413.188|75.256|0.784|
-|exp_dynamic_quantization|2.270e+07|86.609|54.674|0.779|
-|exp_unstructured_pruning_random|1.083e+08|413.188|81.144|0.429|
-|exp_unstructured_pruning_l1|1.083e+08|413.188|80.742|0.665|
-|exp_sparse_training|1.083e+08|413.188|83.362|0.714|
-
+|exp_original_model|1.083e+08|413.188|66.957|0.784|
+|exp_dynamic_quantization|2.270e+07|86.609|48.532|0.779|
+|exp_unstructured_pruning_random|1.083e+08|413.188|64.068|0.429|
+|exp_unstructured_pruning_l1|1.083e+08|413.188|65.058|0.665|
+|exp_sparse_training|1.083e+08|413.188|64.586|0.714|
+|exp_openvino|1.083e+08|413.188|62.635|0.784|
 
 
 ## Weight clustering 
