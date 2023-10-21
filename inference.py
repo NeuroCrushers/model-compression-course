@@ -193,6 +193,7 @@ class OpenVinoEvaluator(Evaluator):
         return compiled_model, tokenizer
 
     def predict(self, input):
+        input.pop('token_type_ids')
         input = {k: v.to(self.device) for k, v in input.items()}
         logits = self.model(input)[self.output_layer]
         return np.argmax(logits, axis=1)
@@ -219,7 +220,7 @@ if __name__ == "__main__":
     if not format:
         with open(config_path) as config_js:
             config = json.load(config_js)
-            format = config.get('format', 'pt')
+            format = config.get('convert_to_format', 'pt')
 
     assert format in FORMATS, f'Unknown format {format}.' \
                               f'The model can only be loaded from the following formats: {",".join(FORMATS.keys())}'
