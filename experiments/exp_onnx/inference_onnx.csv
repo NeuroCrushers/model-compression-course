@@ -1,0 +1,3 @@
+﻿Experiment;Size (Mb);Inference time (s);F1 score;Device
+exp_baseline;413;72;0.775;cpu
+exp_onnx;413;57;0.77;cpu
