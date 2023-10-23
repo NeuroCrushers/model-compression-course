@@ -12,6 +12,8 @@ Model: ```bert-base-cased```
 |exp_unstructured_pruning_l1|1.083e+08|413.188|65.058|0.665|
 |exp_sparse_training|1.083e+08|413.188|64.586|0.714|
 |exp_openvino|1.083e+08|413.188|62.635|0.784|
+|exp_onnx|1.083e+08|413.188|57.743|0.756|
+|exp_optimum|1.083e+08|413.188|50.000|0.775|
 
 
 ## Weight clustering 
